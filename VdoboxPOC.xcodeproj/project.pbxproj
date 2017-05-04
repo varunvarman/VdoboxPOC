@@ -265,6 +265,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = M698WQAFVS;
 				INFOPLIST_FILE = VdoboxPOC/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dietcode.VdoboxPOC;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -278,6 +279,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = M698WQAFVS;
 				INFOPLIST_FILE = VdoboxPOC/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dietcode.VdoboxPOC;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -304,6 +306,7 @@
 				8BC781A01EAF265A00A4EE3C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
