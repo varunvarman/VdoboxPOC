@@ -123,7 +123,7 @@ class ViewController: UIViewController {
     fileprivate func initiatePlayer() {
         let endPoints = self.playerItemMetadata.map { (object) -> NSValue in
             let endTime = object["endSecond"] as? Int ?? 0
-            return NSValue(time: CMTimeMake(Int64(30), Int32(1)))
+            return NSValue(time: CMTimeMake(Int64(20), Int32(1)))
         }
         let startPoints = self.playerItemMetadata.map { (object) -> NSValue in
             let startTime = object["startSecond"] as? Int ?? 0
@@ -152,7 +152,6 @@ class ViewController: UIViewController {
             guard (self != nil), (self?.playerItemMetadata.count)! > 0 else {
                 return
             }
-            self?.displayData()
         })
         
         boundryEndTimeObserverToken = player?.addBoundaryTimeObserver(forTimes: endPoints, queue: nil, using: {
@@ -161,8 +160,6 @@ class ViewController: UIViewController {
             guard (self != nil), (self?.playerItemDisplayedMetadata.count)! > 0 else {
                 return
             }
-            self?.hideData()
-            self?.player?.seek(to: CMTimeMake(Int64(8), Int32(1)))
         })
     }
     
@@ -177,11 +174,7 @@ class ViewController: UIViewController {
             }
         }
         
-       // let syncLayer = AVSynchronizedLayer(playerItem: playerItem)
-        
-        let standardlayer = CALayer()
-        standardlayer.frame = CGRect(x: 0.0, y: 0.0, width: self.view.frame.size.width, height: self.view.frame.size.width)
-        standardlayer.backgroundColor = UIColor.clear.cgColor
+        let syncLayer = AVSynchronizedLayer(playerItem: playerItem)
         
         for index in 0..<self.playerItemMetadata.count {
             
@@ -211,49 +204,44 @@ class ViewController: UIViewController {
 //            keyFrameAnimation.fillMode = kCAFillModeBackwards
 //            keyFrameAnimation.isRemovedOnCompletion = false
             
-//            let showAnimation = CABasicAnimation(keyPath: "opacity")
-//            showAnimation.fromValue = NSNumber(value: 0.0)
-//            showAnimation.toValue = NSNumber(value: 1.0)
-//            showAnimation.duration = 0.5
-//            showAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-//            showAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + 10.0
-//            showAnimation.fillMode = kCAFillModeBackwards
-//            showAnimation.isRemovedOnCompletion = false
-//            showAnimation.delegate = self
-//            dataLayer.add(showAnimation, forKey: "showOpacity")
-//            
-//            let hideAnimation = CABasicAnimation(keyPath: "opacity")
-//            hideAnimation.fromValue = NSNumber(value: 1.0)
-//            hideAnimation.toValue = NSNumber(value: 0.0)
-//            hideAnimation.duration = 0.5
-//            hideAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-//            hideAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + 20.0
-//            showAnimation.fillMode = kCAFillModeForwards
-//            hideAnimation.isRemovedOnCompletion = false
-//            hideAnimation.delegate = self
-//            dataLayer.add(hideAnimation, forKey: "hideOpacity")
+            let showAnimation = CABasicAnimation(keyPath: "opacity")
+            showAnimation.fromValue = NSNumber(value: 0.0)
+            showAnimation.toValue = NSNumber(value: 1.0)
+            showAnimation.duration = 0.5
+            showAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
+            showAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + 10.0
+            showAnimation.fillMode = kCAFillModeBoth
+            showAnimation.isRemovedOnCompletion = false
+            dataLayer.add(showAnimation, forKey: "showOpacity")
             
-           // syncLayer.addSublayer(dataLayer)
-            standardlayer.addSublayer(dataLayer)
+            let hideAnimation = CABasicAnimation(keyPath: "opacity")
+            hideAnimation.fromValue = NSNumber(value: 1.0)
+            hideAnimation.toValue = NSNumber(value: 0.0)
+            hideAnimation.duration = 0.5
+            hideAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
+            hideAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + 20.0
+            hideAnimation.fillMode = kCAFillModeForwards
+            hideAnimation.isRemovedOnCompletion = false
+            dataLayer.add(hideAnimation, forKey: "hideOpacity")
             
-            dataToDisplay["isDisplayed"] = false as AnyObject
+            syncLayer.addSublayer(dataLayer)
+            
+            dataToDisplay["isDisplayed"] = true as AnyObject
             dataToDisplay["dataLayer"] = dataLayer as AnyObject
             
-            self.playerItemMetadata.insert(dataToDisplay, at: index)
-            
-//            self.playerItemDisplayedMetadata.append(dataToDisplay)
-//            self.playerItemDisplayedMetadata.sort(by: { (element0, element1) -> Bool in
-//                guard let startTime0 = element0["endSecond"] as? Int else {
-//                    return false
-//                }
-//                guard let startTime1 = element1["endSecond"] as? Int else {
-//                    return false
-//                }
-//                return startTime0 < startTime1
-//            })
+            self.playerItemDisplayedMetadata.append(dataToDisplay)
+            self.playerItemDisplayedMetadata.sort(by: { (element0, element1) -> Bool in
+                guard let startTime0 = element0["endSecond"] as? Int else {
+                    return false
+                }
+                guard let startTime1 = element1["endSecond"] as? Int else {
+                    return false
+                }
+                return startTime0 < startTime1
+            })
         }
         
-        self.view.layer.addSublayer(standardlayer)
+        self.view.layer.addSublayer(syncLayer)
         //self.view.layer.insertSublayer(dataLayer, above: videoLayer)
         
     }
