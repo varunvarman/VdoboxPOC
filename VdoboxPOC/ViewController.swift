@@ -35,6 +35,7 @@ class ViewController: UIViewController {
     fileprivate var playerItem: AVPlayerItem?
     fileprivate var playerItemContext: AVPlayerItem?
     fileprivate var playerLayer: AVPlayerLayer?
+    fileprivate var synchronousLayer: AVSynchronizedLayer?
     fileprivate var boundryStartTimeObserverToken: Any?
     fileprivate var boundryEndTimeObserverToken: Any?
     fileprivate var playerItemMetadata: [[String: AnyObject]] = []
@@ -48,7 +49,6 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         fetchPlayerMetaData()
-        //initiatePlayer()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -123,11 +123,11 @@ class ViewController: UIViewController {
     fileprivate func initiatePlayer() {
         let endPoints = self.playerItemMetadata.map { (object) -> NSValue in
             let endTime = object["endSecond"] as? Int ?? 0
-            return NSValue(time: CMTimeMake(Int64(20), Int32(1)))
+            return NSValue(time: CMTimeMake(Int64(endTime), Int32(1)))
         }
         let startPoints = self.playerItemMetadata.map { (object) -> NSValue in
             let startTime = object["startSecond"] as? Int ?? 0
-            return NSValue(time: CMTimeMake(Int64(10), Int32(1)))
+            return NSValue(time: CMTimeMake(Int64(startTime), Int32(1)))
         }
         print("\(Bundle.main.bundleIdentifier!)_MAPPED_ARRAY: \(endPoints)")
         asset = AVAsset(url: playerItemURL)
@@ -156,7 +156,6 @@ class ViewController: UIViewController {
         
         boundryEndTimeObserverToken = player?.addBoundaryTimeObserver(forTimes: endPoints, queue: nil, using: {
             [weak self] time in
-            //print("\(Bundle.main.bundleIdentifier!)_TIME_OBSERVED: \(Float(CMTimeGetSeconds((self?.player?.currentTime())!)))")
             guard (self != nil), (self?.playerItemDisplayedMetadata.count)! > 0 else {
                 return
             }
@@ -165,7 +164,7 @@ class ViewController: UIViewController {
     
     fileprivate func addPlayerMetadataLayer() {
         // check if a Item to play is avaliable, also that its metadat array contsins elements, to overlay
-        guard let playerItem = self.playerItem, self.playerItemMetadata.count > 0 else {
+        guard let playerItem = self.playerItem, self.playerItemMetadata.count > 0, let videoLayer = self.playerLayer else {
             return
         }
         for layer in self.view.layer.sublayers! {
@@ -174,7 +173,15 @@ class ViewController: UIViewController {
             }
         }
         
+        let videoDisplayRect = videoLayer.videoRect
+        print("VIDEO FRAME: \(videoDisplayRect)")
+        let videoGravity = videoLayer.videoGravity
+        print("VIDEO Gravity: \(videoGravity)")
+        print("VIDEO FRAME: \(videoLayer.frame)")
+        
         let syncLayer = AVSynchronizedLayer(playerItem: playerItem)
+        syncLayer.frame = CGRect(x: videoLayer.frame.origin.x, y: videoLayer.frame.origin.y, width: videoLayer.frame.width, height: videoLayer.frame.width)
+        synchronousLayer = syncLayer
         
         for index in 0..<self.playerItemMetadata.count {
             
@@ -182,34 +189,31 @@ class ViewController: UIViewController {
             let xCoordinate = CGFloat(dataToDisplay["x"] as? Int ?? 0)
             let yCoordinate = CGFloat(dataToDisplay["y"] as? Int ?? 0)
             let startTime = CFTimeInterval(dataToDisplay["startSecond"] as? Int ?? 0) // start Time
-            let _ = CFTimeInterval(dataToDisplay["endSecond"] as? Int ?? 0) + 10.0 // end Time
+            let endTime = CFTimeInterval(dataToDisplay["endSecond"] as? Int ?? 0) + 5.0 // end Time
             
             let pinImage = UIImage(named: "pin")?.cgImage
             
+            let touchLayer = CALayer()
+            touchLayer.frame = CGRect(x: (videoDisplayRect.origin.x + xCoordinate), y: (videoDisplayRect.origin.y + yCoordinate), width: 30.0, height: 30.0)
+            touchLayer.contentsRect = CGRect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
+            touchLayer.backgroundColor = UIColor.clear.cgColor
+            
             let dataLayer = CALayer()
-            dataLayer.frame = CGRect(x: (0.0 + xCoordinate), y: (84.0 + yCoordinate), width: 30.0, height: 30.0)
+            dataLayer.frame = CGRect(x: 0.0, y: 0.0, width: 30.0, height: 30.0)
             dataLayer.backgroundColor = UIColor.clear.cgColor
             dataLayer.contents = pinImage
             dataLayer.contentsGravity = kCAGravityResizeAspect
             dataLayer.contentsRect = CGRect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
             dataLayer.opacity = 0.0
-            //self.view.layer.addSublayer(dataLayer)
             
-//            let keyFrameAnimation = CAKeyframeAnimation(keyPath: "opacity")
-//            keyFrameAnimation.values = [0.0, 0.25, 0.50, 0.75, 1.0]
-//            keyFrameAnimation.keyTimes = [0.0, 0.25, 0.50, 0.75, 1.0]
-//            keyFrameAnimation.duration = 0.5//((endTime - startTime) > 0 ? ((endTime - startTime)) : 1.0)
-//            keyFrameAnimation.timingFunctions = [CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)]
-//            keyFrameAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + startTime
-//            keyFrameAnimation.fillMode = kCAFillModeBackwards
-//            keyFrameAnimation.isRemovedOnCompletion = false
+            touchLayer.addSublayer(dataLayer)
             
             let showAnimation = CABasicAnimation(keyPath: "opacity")
             showAnimation.fromValue = NSNumber(value: 0.0)
             showAnimation.toValue = NSNumber(value: 1.0)
             showAnimation.duration = 0.5
             showAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-            showAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + 10.0
+            showAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + startTime
             showAnimation.fillMode = kCAFillModeBoth
             showAnimation.isRemovedOnCompletion = false
             dataLayer.add(showAnimation, forKey: "showOpacity")
@@ -219,14 +223,14 @@ class ViewController: UIViewController {
             hideAnimation.toValue = NSNumber(value: 0.0)
             hideAnimation.duration = 0.5
             hideAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-            hideAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + 20.0
+            hideAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + endTime
             hideAnimation.fillMode = kCAFillModeForwards
             hideAnimation.isRemovedOnCompletion = false
             dataLayer.add(hideAnimation, forKey: "hideOpacity")
             
-            syncLayer.addSublayer(dataLayer)
+            syncLayer.addSublayer(touchLayer)
             
-            dataToDisplay["isDisplayed"] = true as AnyObject
+            dataToDisplay["isDisplayed"] = false as AnyObject
             dataToDisplay["dataLayer"] = dataLayer as AnyObject
             
             self.playerItemDisplayedMetadata.append(dataToDisplay)
@@ -242,136 +246,7 @@ class ViewController: UIViewController {
         }
         
         self.view.layer.addSublayer(syncLayer)
-        //self.view.layer.insertSublayer(dataLayer, above: videoLayer)
         
-    }
-    
-    fileprivate func videoDidScrub(to playTime: Float) {
-        let currentTime = playTime //Float(CMTimeGetSeconds((self.player?.currentTime())!))
-        if self.playerItemMetadata.count > 0 {
-            // element.startSecond < currentTime
-            // element.endSecond > currentTime
-            let elementsToDisplay = self.playerItemMetadata.filter({ (element) -> Bool in
-                var valueToReturn = false
-                if let startSecond = element["startSecond"] as? Float, startSecond < currentTime, let endSecond = element["endSecond"] as? Float, endSecond > currentTime, let layerToDisplay = element["dataLayer"] as? CALayer, layerToDisplay.opacity == 0.0 {
-                    valueToReturn = true
-                }
-                return valueToReturn
-            })
-            for index in 0..<elementsToDisplay.count {
-                var object = elementsToDisplay[index]
-                object["isDisplayed"] = true as AnyObject
-                let dataLayer = object["datalayer"] as? CALayer
-                dataLayer?.opacity = 1.0
-                
-                // after toggling add the elements to the displayed array, and sort it in ascending order of 'endSecond'.
-                self.playerItemDisplayedMetadata.append(object)
-                self.playerItemDisplayedMetadata.sort(by: { (element0, element1) -> Bool in
-                    guard let startTime0 = element0["endSecond"] as? Int else {
-                        return false
-                    }
-                    guard let startTime1 = element1["endSecond"] as? Int else {
-                        return false
-                    }
-                    return startTime0 < startTime1
-                })
-            }
-        }
-        
-        if self.playerItemDisplayedMetadata.count > 0 {
-            let elementsToHide = self.playerItemDisplayedMetadata.filter({ (element) -> Bool in
-                var valueToReturn = false
-                if let endSecond = element["endSecond"] as? Float, endSecond <= currentTime, let dataLayer = element["dataLayer"] as? CALayer, dataLayer.opacity == 1.0 {
-                    valueToReturn = true
-                }
-                return valueToReturn
-            })
-            
-            for index in 0..<elementsToHide.count {
-                var object = elementsToHide[index]
-                let objectIndex = self.playerItemDisplayedMetadata.index(where: { (element) -> Bool in
-                    var valueToReturn = false
-                    if let objectTag = object["tag"] as? Int, let elementTag = element["tag"] as? Int, objectTag == elementTag {
-                        valueToReturn = true
-                    }
-                    return valueToReturn
-                })
-                object["isDisplayed"] = false as AnyObject
-                let dataLayer = object["datalayer"] as? CALayer
-                dataLayer?.opacity = 0.0
-                
-                if let index = objectIndex {
-                    self.playerItemDisplayedMetadata.remove(at: index)
-                }
-            }
-        }
-    }
-    
-    fileprivate func displayData() {
-        guard self.playerItemMetadata.count > 0 else {
-            return
-        }
-        
-        let currentTime = Float(CMTimeGetSeconds((self.player?.currentTime())!))
-        
-        let elementsToDisplayOptional = self.playerItemMetadata.filter({ (element) -> Bool in
-            var valueToReturn = false
-            if let startSecond = element["startSecond"] as? Int, startSecond == 105, let layerToDisplay = element["dataLayer"] as? CALayer, layerToDisplay.opacity == 0.0 {
-                valueToReturn = true
-            }
-            return valueToReturn
-        })
-        
-        if let elementsToDisplay = elementsToDisplayOptional as? [[String: AnyObject]] {
-            for index in 0..<elementsToDisplay.count {
-                var object = elementsToDisplay[index]
-                object["isDisplayed"] = true as AnyObject
-                let dataLayer = object["dataLayer"] as? CALayer
-                dataLayer?.opacity = 1.0
-                
-                self.playerItemDisplayedMetadata.append(object)
-                self.playerItemDisplayedMetadata.sort(by: { (element0, element1) -> Bool in
-                    guard let startTime0 = element0["endSecond"] as? Int else {
-                        return false
-                    }
-                    guard let startTime1 = element1["endSecond"] as? Int else {
-                        return false
-                    }
-                    return startTime0 < startTime1
-                })
-            }
-        }
-    }
-    
-    fileprivate func hideData() {
-        let currentTime = Float(CMTimeGetSeconds((self.player?.currentTime())!))
-        
-        let elementsToHideOptional = self.playerItemDisplayedMetadata.filter({ (element) -> Bool in
-            var valueToReturn = false
-            if let endSecond = element["endSecond"] as? Int, endSecond == 105, let dataLayer = element["dataLayer"] as? CALayer, dataLayer.opacity == 1.0 {
-                valueToReturn = true
-            }
-            return valueToReturn
-        })
-        if let elementsToHide = elementsToHideOptional as? [[String: AnyObject]] {
-            for index in 0..<elementsToHide.count {
-                var object = elementsToHide[index]
-                let objectIndex = self.playerItemDisplayedMetadata.index(where: { (element) -> Bool in
-                    var valueToReturn = false
-                    if let objectTag = object["tag"] as? Int, let elementTag = element["tag"] as? Int, objectTag == elementTag {
-                        valueToReturn = true
-                    }
-                    return valueToReturn
-                })
-                object["isDisplayed"] = false as AnyObject
-                let dataLayer = object["dataLayer"] as? CALayer
-                dataLayer?.opacity = 0.0
-                
-                if let objectInd = objectIndex {
-                    self.playerItemDisplayedMetadata.remove(at: objectInd)
-                }
-            }
-        }
     }
     
     // MARK: AVPlayer Controller Methods
@@ -426,14 +301,41 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    // MARK: Did Select Hotspot
+    fileprivate func didSelectHotSpot(having metadata: [String: AnyObject]) {
+        guard let videoPlayer = self.player, let startSecond = metadata["startSecond"] as? Int, let endSecond = metadata["endSecond"] as? Int else {
+            return
+        }
+        let currentTime = Int(CMTimeGetSeconds(videoPlayer.currentTime()))
+        if currentTime >= startSecond && currentTime <= endSecond {
+            // the hotspot was visible when clicked
+            print("DID SELECT HOTSPOT: \(metadata)")
+        }
+    }
 
 }
 
-//extension ViewController: CAAnimationDelegate {
-//    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
-//        if (flag) {
-//            
-//        }
-//    }
-//}
+// MARK: Touch Methods
+extension ViewController {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first, let syncLayer = self.synchronousLayer else {
+            return
+        }
+        var touchPoint = touch.location(in: self.view)
+        touchPoint = self.view.layer.convert(touchPoint, to: syncLayer as CALayer)
+        if syncLayer.contains(touchPoint) {
+            // the touch occoured on the syncLayer
+            let expectedMetadata = self.playerItemDisplayedMetadata.filter({ (element) -> Bool in
+                var valueToReturn = false
+                if let displayedLayer = element["dataLayer"] as? CALayer, displayedLayer.contains(syncLayer.convert(touchPoint, to: displayedLayer)) == true, displayedLayer.opacity == 0.0 {
+                    valueToReturn = true
+                }
+                return valueToReturn
+            })
+            for index in 0..<expectedMetadata.count {
+                self.didSelectHotSpot(having: expectedMetadata[index])
+            }
+        }
+    }
+}
 
