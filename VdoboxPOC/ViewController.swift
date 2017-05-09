@@ -241,7 +241,7 @@ class ViewController: UIViewController {
             let xCoordinate = CGFloat(dataToDisplay["x"] as? Int ?? 0)
             let yCoordinate = CGFloat(dataToDisplay["y"] as? Int ?? 0)
             let startTime = CFTimeInterval(dataToDisplay["startSecond"] as? Int ?? 0) // start Time
-            let endTime = CFTimeInterval(dataToDisplay["endSecond"] as? Int ?? 0) + 5.0 // end Time
+            let endTime = CFTimeInterval(dataToDisplay["endSecond"] as? Int ?? 0) //+ 5.0 // end Time
             
             let pinImage = UIImage(named: "pin")?.cgImage
             
