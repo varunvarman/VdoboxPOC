@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="iok-Bg-Yr7">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="iok-Bg-Yr7">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -37,7 +37,33 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="uAr-R8-lD1">
+                                <rect key="frame" x="14" y="617" width="347" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="WSS-Ap-ycF"/>
+                                </constraints>
+                            </slider>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.00/0.00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MrT-dG-nq7">
+                                <rect key="frame" x="16" y="588" width="343" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="bje-aZ-Dvq"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="16"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="MrT-dG-nq7" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="16" id="4zS-jV-Tnb"/>
+                            <constraint firstAttribute="trailing" secondItem="MrT-dG-nq7" secondAttribute="trailing" constant="16" id="LYN-cL-rsQ"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="uAr-R8-lD1" secondAttribute="bottom" constant="20" id="M57-QI-b8T"/>
+                            <constraint firstAttribute="trailing" secondItem="uAr-R8-lD1" secondAttribute="trailing" constant="16" id="T5Q-23-3X5"/>
+                            <constraint firstItem="uAr-R8-lD1" firstAttribute="top" secondItem="MrT-dG-nq7" secondAttribute="bottom" constant="8" id="V6T-Yz-Ugd"/>
+                            <constraint firstItem="uAr-R8-lD1" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="16" id="krJ-y5-4SN"/>
+                            <constraint firstItem="MrT-dG-nq7" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="z3w-nh-wBm"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="rPU-jR-cEU">
                         <rightBarButtonItems>
@@ -48,11 +74,13 @@
                     <connections>
                         <outlet property="pauseButton" destination="npg-3Q-ad8" id="QNx-K6-SWF"/>
                         <outlet property="playButton" destination="IUR-qD-28S" id="E5E-Jy-KvQ"/>
+                        <outlet property="videoSlider" destination="uAr-R8-lD1" id="Mc5-jb-89H"/>
+                        <outlet property="videoTimerLabel" destination="MrT-dG-nq7" id="1YU-9J-LtJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="230" y="139"/>
+            <point key="canvasLocation" x="229.59999999999999" y="138.98050974512745"/>
         </scene>
     </scenes>
 </document>
