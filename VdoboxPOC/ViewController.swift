@@ -14,6 +14,17 @@ import AVFoundation
 class ViewController: UIViewController {
 
     // MARK: Outlets
+    @IBOutlet weak var videoTimeLabel: UILabel!
+    @IBOutlet weak var videoSlider: UISlider! {
+        didSet {
+            self.videoSlider.addTarget(self, action: #selector(didStart(tracking:)), for: .touchDown)
+            self.videoSlider.addTarget(self, action: #selector(didFinish(tracking:)), for: .touchUpInside)
+            self.videoSlider.addTarget(self, action: #selector(didChange(value:)), for: .valueChanged)
+            self.videoSlider.minimumTrackTintColor = UIColor(colorLiteralRed: 227.0/255.0, green: 76.0/255.0, blue: 65.0/255.0, alpha: 1.0)
+            self.videoSlider.thumbTintColor = UIColor(colorLiteralRed: 227.0/255.0, green: 76.0/255.0, blue: 65.0/255.0, alpha: 1.0)
+            self.videoSlider.maximumTrackTintColor = UIColor.gray
+        }
+    }
     @IBOutlet weak var playButton: UIBarButtonItem! {
         didSet {
             playButton.target = self
@@ -38,9 +49,25 @@ class ViewController: UIViewController {
     fileprivate var synchronousLayer: AVSynchronizedLayer?
     fileprivate var boundryStartTimeObserverToken: Any?
     fileprivate var boundryEndTimeObserverToken: Any?
+    fileprivate var periodicIntervalObserverToken: Any?
     fileprivate var playerItemMetadata: [[String: AnyObject]] = []
     fileprivate var playerItemDisplayedMetadata: [[String: AnyObject]] = []
     fileprivate var isVideoPlaying: Bool = false
+    fileprivate var wasVideoPlaying: Bool = false
+    fileprivate var isVideoReady: Bool = false {
+        willSet {
+            if newValue {
+                self.videoSlider.alpha = 1.0
+                self.videoSlider.isEnabled = true
+                let totalDuration = CMTimeGetSeconds(self.player?.currentItem?.duration ?? CMTimeMake(Int64(0), Int32(0)))
+                let currentDuration = CMTimeGetSeconds(self.player?.currentTime() ?? CMTimeMake(Int64(0), Int32(0)))
+                self.videoTimeLabel.text = "\(String(format: "%.2f", currentDuration))/\(String(format: "%.2f", totalDuration))"
+            } else {
+                self.videoSlider.alpha = 0.7
+                self.videoSlider.isEnabled = false
+            }
+        }
+    }
     fileprivate let playerItemURL: URL = URL(string: "https://res.cloudinary.com/vdobox/video/upload/v1491284125/hyxqi2yoedoh9ti4dvd8.mp4")!
     fileprivate let playerItemMetadataURL: URL = URL(string: "https://vdobox-api.herokuapp.com/api/v1/videoeditors?videoID=58f8a23214656a11005281ce")!
     
@@ -48,6 +75,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        setupUI()
         fetchPlayerMetaData()
     }
     
@@ -61,13 +89,23 @@ class ViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        guard let playR = self.player, let obs = self.boundryEndTimeObserverToken else {
+        guard let playR = self.player, let obsEndTime = self.boundryEndTimeObserverToken, let obsStartTime = self.boundryStartTimeObserverToken, let obsPeriodicInterval = self.periodicIntervalObserverToken else {
             return
         }
-        playR.removeTimeObserver(obs)
+        playR.removeTimeObserver(obsEndTime)
+        playR.removeTimeObserver(obsStartTime)
+        playR.removeTimeObserver(obsPeriodicInterval)
     }
     
     // MARK: Utility Methods
+    
+    fileprivate func setupUI() {
+        if isVideoReady {
+            videoSlider.alpha = 0.7
+            videoSlider.isEnabled = false
+        }
+    }
+    
     fileprivate func fetchPlayerMetaData() {
         var request = URLRequest(url: playerItemMetadataURL)
         request.httpMethod = "GET"
@@ -160,6 +198,20 @@ class ViewController: UIViewController {
                 return
             }
         })
+        
+        periodicIntervalObserverToken = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(Float64(1), Int32(1)), queue: nil, using: { (time) in
+            // do something
+            guard let videoPlayer = self.player else {
+                return
+            }
+            let itemDuration = CMTimeGetSeconds((videoPlayer.currentItem?.duration)!)
+            let currentTime = CMTimeGetSeconds(videoPlayer.currentTime())
+            let sliderValue = Float(currentTime/itemDuration)
+            self.videoSlider.setValue(sliderValue, animated: false)
+            
+            self.videoTimeLabel.text = "\(String(format: "%.2f", currentTime))/\(String(format: "%.2f", itemDuration))"
+            
+        })
     }
     
     fileprivate func addPlayerMetadataLayer() {
@@ -188,8 +240,8 @@ class ViewController: UIViewController {
             var dataToDisplay = self.playerItemMetadata[index]
             let xCoordinate = CGFloat(dataToDisplay["x"] as? Int ?? 0)
             let yCoordinate = CGFloat(dataToDisplay["y"] as? Int ?? 0)
-            let startTime = CFTimeInterval(dataToDisplay["startSecond"] as? Int ?? 0) // start Time
-            let endTime = CFTimeInterval(dataToDisplay["endSecond"] as? Int ?? 0) + 5.0 // end Time
+            let _ = CFTimeInterval(dataToDisplay["startSecond"] as? Int ?? 0) // start Time
+            let _ = CFTimeInterval(dataToDisplay["endSecond"] as? Int ?? 0) + 5.0 // end Time
             
             let pinImage = UIImage(named: "pin")?.cgImage
             
@@ -213,7 +265,7 @@ class ViewController: UIViewController {
             showAnimation.toValue = NSNumber(value: 1.0)
             showAnimation.duration = 0.5
             showAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-            showAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + startTime
+            showAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + 10.0 //startTime
             showAnimation.fillMode = kCAFillModeBoth
             showAnimation.isRemovedOnCompletion = false
             dataLayer.add(showAnimation, forKey: "showOpacity")
@@ -223,7 +275,7 @@ class ViewController: UIViewController {
             hideAnimation.toValue = NSNumber(value: 0.0)
             hideAnimation.duration = 0.5
             hideAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-            hideAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + endTime
+            hideAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + 30.0 //endTime
             hideAnimation.fillMode = kCAFillModeForwards
             hideAnimation.isRemovedOnCompletion = false
             dataLayer.add(hideAnimation, forKey: "hideOpacity")
@@ -251,7 +303,7 @@ class ViewController: UIViewController {
     
     // MARK: AVPlayer Controller Methods
     func playVideo() {
-        guard let player = self.player else {
+        guard let player = self.player, isVideoReady == true else {
             return
         }
         if (!isVideoPlaying) {
@@ -261,7 +313,7 @@ class ViewController: UIViewController {
     }
     
     func pauseVideo() {
-        guard let player = self.player else {
+        guard let player = self.player, isVideoReady == true else {
             return
         }
         if (isVideoPlaying) {
@@ -282,6 +334,7 @@ class ViewController: UIViewController {
                 // readyToPlay
                 // player is ready to play, load metadata, start playing
                 print("PLAYER READY TO PLAY")
+                self.isVideoReady = true
                 self.addPlayerMetadataLayer()
             } else if status == .failed {
                 // failed
@@ -312,7 +365,48 @@ class ViewController: UIViewController {
             print("DID SELECT HOTSPOT: \(metadata)")
         }
     }
+    
+    // MARK: Slider Action Methods
 
+    @objc fileprivate func didStart(tracking slider: UISlider) {
+        guard let videoPlayer = self.player else {
+            return
+        }
+        if videoPlayer.rate > 0 {
+            wasVideoPlaying = true
+            self.pauseVideo()
+        }
+    }
+    
+    @objc fileprivate func didFinish(tracking slider: UISlider) {
+        guard let videoPlayer = self.player else {
+            return
+        }
+        
+        let itemDuration = CMTimeGetSeconds((videoPlayer.currentItem?.duration)!)
+        let expectedTime = Float(itemDuration) * slider.value
+        
+        videoPlayer.seek(to: CMTimeMake(Int64(expectedTime), Int32(1)), toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero) { (status) in
+            if status {
+                // do something, after video seek success
+            }
+        }
+        if wasVideoPlaying {
+            wasVideoPlaying = false
+            self.playVideo()
+        }
+    }
+    
+    @objc fileprivate func didChange(value slider: UISlider) {
+        guard let videoPlayer = self.player else {
+            return
+        }
+        
+        let itemDuration = CMTimeGetSeconds((videoPlayer.currentItem?.duration)!)
+        let expectedTime = Float(itemDuration) * slider.value
+        
+        self.videoTimeLabel.text = "\(String(format: "%.2f", expectedTime))/\(String(format: "%.2f", itemDuration))"
+    }
 }
 
 // MARK: Touch Methods
