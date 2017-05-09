@@ -240,8 +240,8 @@ class ViewController: UIViewController {
             var dataToDisplay = self.playerItemMetadata[index]
             let xCoordinate = CGFloat(dataToDisplay["x"] as? Int ?? 0)
             let yCoordinate = CGFloat(dataToDisplay["y"] as? Int ?? 0)
-            let _ = CFTimeInterval(dataToDisplay["startSecond"] as? Int ?? 0) // start Time
-            let _ = CFTimeInterval(dataToDisplay["endSecond"] as? Int ?? 0) + 5.0 // end Time
+            let startTime = CFTimeInterval(dataToDisplay["startSecond"] as? Int ?? 0) // start Time
+            let endTime = CFTimeInterval(dataToDisplay["endSecond"] as? Int ?? 0) + 5.0 // end Time
             
             let pinImage = UIImage(named: "pin")?.cgImage
             
@@ -265,7 +265,7 @@ class ViewController: UIViewController {
             showAnimation.toValue = NSNumber(value: 1.0)
             showAnimation.duration = 0.5
             showAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-            showAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + 10.0 //startTime
+            showAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + startTime //startTime
             showAnimation.fillMode = kCAFillModeBoth
             showAnimation.isRemovedOnCompletion = false
             dataLayer.add(showAnimation, forKey: "showOpacity")
@@ -275,7 +275,7 @@ class ViewController: UIViewController {
             hideAnimation.toValue = NSNumber(value: 0.0)
             hideAnimation.duration = 0.5
             hideAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-            hideAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + 30.0 //endTime
+            hideAnimation.beginTime = AVCoreAnimationBeginTimeAtZero + endTime //endTime
             hideAnimation.fillMode = kCAFillModeForwards
             hideAnimation.isRemovedOnCompletion = false
             dataLayer.add(hideAnimation, forKey: "hideOpacity")
