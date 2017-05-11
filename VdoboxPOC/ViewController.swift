@@ -46,6 +46,7 @@ class ViewController: UIViewController {
     fileprivate var playerItem: AVPlayerItem?
     fileprivate var playerItemContext: AVPlayerItem?
     fileprivate var playerLayer: AVPlayerLayer?
+    fileprivate var PlayerMetadataLayer: CALayer?
     fileprivate var boundryStartTimeObserverToken: Any?
     fileprivate var boundryEndTimeObserverToken: Any?
     fileprivate var periodicIntervalTimeObserver: Any?
@@ -235,6 +236,7 @@ class ViewController: UIViewController {
         let standardlayer = CALayer()
         standardlayer.frame = CGRect(x: videoLayer.frame.origin.x, y: videoLayer.frame.origin.y, width: videoLayer.frame.width, height: videoLayer.frame.height)
         standardlayer.backgroundColor = UIColor.clear.cgColor
+        self.PlayerMetadataLayer = standardlayer
         
         for index in 0..<self.playerItemMetadata.count {
             
@@ -412,6 +414,18 @@ class ViewController: UIViewController {
         }
     }
     
+    // MARK: Did Select Hotspot
+    fileprivate func didSelectHotSpot(having metadata: [String: AnyObject]) {
+        guard let videoPlayer = self.player, let startSecond = metadata["startSecond"] as? Int, let endSecond = metadata["endSecond"] as? Int else {
+            return
+        }
+        let currentTime = Int(CMTimeGetSeconds(videoPlayer.currentTime()))
+        if currentTime >= startSecond && currentTime <= endSecond {
+            // the hotspot was visible when clicked
+            print("DID SELECT HOTSPOT: \(metadata)")
+        }
+    }
+    
     // MARK: Key Value Observing
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if context == &playerItemContext {
@@ -485,5 +499,29 @@ class ViewController: UIViewController {
         let expectedTime = CMTimeMake(Int64(Float(itemDuration) * slider.value), Int32(1))
         
         self.videoTimerLabel.text = "\(String(format: "%.2f", CMTimeGetSeconds(expectedTime)))/\(String(format: "%.2f", itemDuration))"
+    }
+}
+
+// MARK: UITouches
+extension ViewController {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first, let metadataLayer = self.PlayerMetadataLayer else {
+            return
+        }
+        var touchPoint = touch.location(in: self.view)
+        touchPoint = self.view.layer.convert(touchPoint, to: metadataLayer as CALayer)
+        if syncLayer.contains(touchPoint) {
+            // the touch occoured on the syncLayer
+            let expectedMetadata = self.playerItemDisplayedMetadata.filter({ (element) -> Bool in
+                var valueToReturn = false
+                if let displayedLayer = element["dataLayer"] as? CALayer, displayedLayer.contains(syncLayer.convert(touchPoint, to: displayedLayer)) == true, displayedLayer.opacity == 0.0 {
+                    valueToReturn = true
+                }
+                return valueToReturn
+            })
+            for index in 0..<expectedMetadata.count {
+                self.didSelectHotSpot(having: expectedMetadata[index])
+            }
+        }
     }
 }
