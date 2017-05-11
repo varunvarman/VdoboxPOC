@@ -220,7 +220,7 @@ class ViewController: UIViewController {
     
     fileprivate func addPlayerMetadataLayer() {
         // check if a Item to play is avaliable, also that its metadat array contsins elements, to overlay
-        guard let _ = self.playerItem, self.playerItemMetadata.count > 0, let videoLayer = self.playerLayer else {
+        guard let _ = self.playerItem, self.playerItemMetadata.count > 0, let videoLayer = self.playerLayer, let currentPlayerItem = self.player?.currentItem else {
             return
         }
         for layer in self.view.layer.sublayers! {
@@ -231,7 +231,7 @@ class ViewController: UIViewController {
         
        // let syncLayer = AVSynchronizedLayer(playerItem: playerItem)
         let videoDisplayRect = videoLayer.videoRect
-        
+        let videoGravity = currentPlayerItem.asset.tracks(withMediaType: AVMediaTypeVideo)[0]
         let standardlayer = CALayer()
         standardlayer.frame = CGRect(x: videoLayer.frame.origin.x, y: videoLayer.frame.origin.y, width: videoLayer.frame.width, height: videoLayer.frame.height)
         standardlayer.backgroundColor = UIColor.clear.cgColor
@@ -239,8 +239,8 @@ class ViewController: UIViewController {
         for index in 0..<self.playerItemMetadata.count {
             
             var dataToDisplay = self.playerItemMetadata[index]
-            let xCoordinate = CGFloat(dataToDisplay["x"] as? Int ?? 0)
-            let yCoordinate = CGFloat(dataToDisplay["y"] as? Int ?? 0)
+            let xCoordinate = ((CGFloat(dataToDisplay["x"] as? Int ?? 0) * videoDisplayRect.width) / videoGravity.naturalSize.width)
+            let yCoordinate = ((CGFloat(dataToDisplay["y"] as? Int ?? 0) * videoDisplayRect.height) / videoGravity.naturalSize.height)
             let _ = CFTimeInterval(dataToDisplay["startSecond"] as? Int ?? 0) // start Time
             let _ = CFTimeInterval(dataToDisplay["endSecond"] as? Int ?? 0) // end Time
             
