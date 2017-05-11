@@ -121,7 +121,7 @@ class ViewController: UIViewController {
                 //print("\(Bundle.main.bundleIdentifier!)_RESPONSE: \(res)")
                 do {
                     let jsonData = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: AnyObject]
-                    //print("\(Bundle.main.bundleIdentifier!)_JSON_DATA: \(jsonData)")
+                    print("\(Bundle.main.bundleIdentifier!)_JSON_DATA: \(jsonData)")
                     if let json = jsonData {
                         guard let results = json["results"] as? [[String: AnyObject]] else {
                             return
@@ -216,7 +216,7 @@ class ViewController: UIViewController {
     
     fileprivate func addPlayerMetadataLayer() {
         // check if a Item to play is avaliable, also that its metadat array contsins elements, to overlay
-        guard let playerItem = self.playerItem, self.playerItemMetadata.count > 0, let videoLayer = self.playerLayer else {
+        guard let playerItem = self.playerItem, self.playerItemMetadata.count > 0, let videoLayer = self.playerLayer, let currentPlayerItem = self.player?.currentItem else {
             return
         }
         for layer in self.view.layer.sublayers! {
@@ -227,7 +227,7 @@ class ViewController: UIViewController {
         
         let videoDisplayRect = videoLayer.videoRect
         print("VIDEO FRAME: \(videoDisplayRect)")
-        let videoGravity = videoLayer.videoGravity
+        let videoGravity = currentPlayerItem.asset.tracks(withMediaType: AVMediaTypeVideo)[0]
         print("VIDEO Gravity: \(videoGravity)")
         print("VIDEO FRAME: \(videoLayer.frame)")
         
@@ -238,8 +238,8 @@ class ViewController: UIViewController {
         for index in 0..<self.playerItemMetadata.count {
             
             var dataToDisplay = self.playerItemMetadata[index]
-            let xCoordinate = CGFloat(dataToDisplay["x"] as? Int ?? 0)
-            let yCoordinate = CGFloat(dataToDisplay["y"] as? Int ?? 0)
+            let xCoordinate = ((CGFloat(dataToDisplay["x"] as? Int ?? 0) * videoDisplayRect.width) / videoGravity.naturalSize.width)
+            let yCoordinate = ((CGFloat(dataToDisplay["y"] as? Int ?? 0) * videoDisplayRect.height) / videoGravity.naturalSize.height)
             let startTime = CFTimeInterval(dataToDisplay["startSecond"] as? Int ?? 0) // start Time
             let endTime = CFTimeInterval(dataToDisplay["endSecond"] as? Int ?? 0) //+ 5.0 // end Time
             
