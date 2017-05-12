@@ -46,7 +46,7 @@ class ViewController: UIViewController {
     fileprivate var playerItem: AVPlayerItem?
     fileprivate var playerItemContext: AVPlayerItem?
     fileprivate var playerLayer: AVPlayerLayer?
-    fileprivate var PlayerMetadataLayer: CALayer?
+    fileprivate var playerMetadataLayer: CALayer?
     fileprivate var boundryStartTimeObserverToken: Any?
     fileprivate var boundryEndTimeObserverToken: Any?
     fileprivate var periodicIntervalTimeObserver: Any?
@@ -69,7 +69,7 @@ class ViewController: UIViewController {
             }
         }
     }
-    fileprivate let playerItemURL: URL = URL(string: "https://res.cloudinary.com/vdobox/video/upload/v1491284125/hyxqi2yoedoh9ti4dvd8.mp4")!
+    fileprivate let playerItemURL: URL = URL(string: "http://res.cloudinary.com/dtudhv7fy/video/upload/v1494568851/feradzbmxhnufb4xbsg1.mp4")!
     fileprivate let playerItemMetadataURL: URL = URL(string: "https://vdobox-api.herokuapp.com/api/v1/videoeditors?videoID=58f8a23214656a11005281ce")!
     
     // MARK: Life Cycle methods
@@ -236,7 +236,7 @@ class ViewController: UIViewController {
         let standardlayer = CALayer()
         standardlayer.frame = CGRect(x: videoLayer.frame.origin.x, y: videoLayer.frame.origin.y, width: videoLayer.frame.width, height: videoLayer.frame.height)
         standardlayer.backgroundColor = UIColor.clear.cgColor
-        self.PlayerMetadataLayer = standardlayer
+        self.playerMetadataLayer = standardlayer
         
         for index in 0..<self.playerItemMetadata.count {
             
@@ -505,16 +505,16 @@ class ViewController: UIViewController {
 // MARK: UITouches
 extension ViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first, let metadataLayer = self.PlayerMetadataLayer else {
+        guard let touch = touches.first, let metadataLayer = self.playerMetadataLayer else {
             return
         }
         var touchPoint = touch.location(in: self.view)
         touchPoint = self.view.layer.convert(touchPoint, to: metadataLayer as CALayer)
-        if syncLayer.contains(touchPoint) {
+        if metadataLayer.contains(touchPoint) {
             // the touch occoured on the syncLayer
             let expectedMetadata = self.playerItemDisplayedMetadata.filter({ (element) -> Bool in
                 var valueToReturn = false
-                if let displayedLayer = element["dataLayer"] as? CALayer, displayedLayer.contains(syncLayer.convert(touchPoint, to: displayedLayer)) == true, displayedLayer.opacity == 0.0 {
+                if let displayedLayer = element["dataLayer"] as? CALayer, displayedLayer.contains(metadataLayer.convert(touchPoint, to: displayedLayer)) == true, displayedLayer.opacity == 1.0 {
                     valueToReturn = true
                 }
                 return valueToReturn
