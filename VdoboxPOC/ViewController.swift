@@ -68,7 +68,7 @@ class ViewController: UIViewController {
             }
         }
     }
-    fileprivate let playerItemURL: URL = URL(string: "https://res.cloudinary.com/vdobox/video/upload/v1491284125/hyxqi2yoedoh9ti4dvd8.mp4")!
+    fileprivate let playerItemURL: URL = URL(string: "http://res.cloudinary.com/dtudhv7fy/video/upload/v1494568851/feradzbmxhnufb4xbsg1.mp4")!
     fileprivate let playerItemMetadataURL: URL = URL(string: "https://vdobox-api.herokuapp.com/api/v1/videoeditors?videoID=58f8a23214656a11005281ce")!
     
     // MARK: Life Cycle methods
