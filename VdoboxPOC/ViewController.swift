@@ -41,20 +41,20 @@ class ViewController: UIViewController {
     // MARK: Public API's
     
     // MARK: Private API's
-    fileprivate var player: AVPlayer?
-    fileprivate var asset: AVAsset?
-    fileprivate var playerItem: AVPlayerItem?
-    fileprivate var playerItemContext: AVPlayerItem?
-    fileprivate var playerLayer: AVPlayerLayer?
-    fileprivate var synchronousLayer: AVSynchronizedLayer?
-    fileprivate var boundryStartTimeObserverToken: Any?
-    fileprivate var boundryEndTimeObserverToken: Any?
-    fileprivate var periodicIntervalObserverToken: Any?
-    fileprivate var playerItemMetadata: [[String: AnyObject]] = []
-    fileprivate var playerItemDisplayedMetadata: [[String: AnyObject]] = []
-    fileprivate var isVideoPlaying: Bool = false
-    fileprivate var wasVideoPlaying: Bool = false
-    fileprivate var isVideoReady: Bool = false {
+    var player: AVPlayer?
+    var asset: AVAsset?
+    var playerItem: AVPlayerItem?
+    var playerItemContext: AVPlayerItem?
+    var playerLayer: AVPlayerLayer?
+    var synchronousLayer: AVSynchronizedLayer?
+    var boundryStartTimeObserverToken: Any?
+    var boundryEndTimeObserverToken: Any?
+    var periodicIntervalObserverToken: Any?
+    var playerItemMetadata: [[String: AnyObject]] = []
+    var playerItemDisplayedMetadata: [[String: AnyObject]] = []
+    var isVideoPlaying: Bool = false
+    var wasVideoPlaying: Bool = false
+    var isVideoReady: Bool = false {
         willSet {
             if newValue {
                 self.videoSlider.alpha = 1.0
@@ -106,7 +106,7 @@ class ViewController: UIViewController {
         }
     }
     
-    fileprivate func fetchPlayerMetaData() {
+    func fetchPlayerMetaData() {
         var request = URLRequest(url: playerItemMetadataURL)
         request.httpMethod = "GET"
         URLSession.shared.dataTask(with: request) { (data, response, error) in
@@ -158,7 +158,7 @@ class ViewController: UIViewController {
         }.resume()
     }
     
-    fileprivate func initiatePlayer() {
+    func initiatePlayer() {
         let endPoints = self.playerItemMetadata.map { (object) -> NSValue in
             let endTime = object["endSecond"] as? Int ?? 0
             return NSValue(time: CMTimeMake(Int64(endTime), Int32(1)))
@@ -214,7 +214,7 @@ class ViewController: UIViewController {
         })
     }
     
-    fileprivate func addPlayerMetadataLayer() {
+    func addPlayerMetadataLayer() {
         // check if a Item to play is avaliable, also that its metadat array contsins elements, to overlay
         guard let playerItem = self.playerItem, self.playerItemMetadata.count > 0, let videoLayer = self.playerLayer, let currentPlayerItem = self.player?.currentItem else {
             return
