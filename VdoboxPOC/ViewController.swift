@@ -47,8 +47,8 @@ class ViewController: UIViewController {
     var playerItemContext: AVPlayerItem?
     var playerLayer: AVPlayerLayer?
     var synchronousLayer: AVSynchronizedLayer?
-    var boundryStartTimeObserverToken: Any?
-    var boundryEndTimeObserverToken: Any?
+    //var boundryStartTimeObserverToken: Any?
+    //var boundryEndTimeObserverToken: Any?
     var periodicIntervalObserverToken: Any?
     var playerItemMetadata: [[String: AnyObject]] = []
     var playerItemDisplayedMetadata: [[String: AnyObject]] = []
@@ -89,11 +89,9 @@ class ViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        guard let playR = self.player, let obsEndTime = self.boundryEndTimeObserverToken, let obsStartTime = self.boundryStartTimeObserverToken, let obsPeriodicInterval = self.periodicIntervalObserverToken else {
+        guard let playR = self.player, let obsPeriodicInterval = self.periodicIntervalObserverToken else {
             return
         }
-        playR.removeTimeObserver(obsEndTime)
-        playR.removeTimeObserver(obsStartTime)
         playR.removeTimeObserver(obsPeriodicInterval)
     }
     
@@ -159,15 +157,15 @@ class ViewController: UIViewController {
     }
     
     func initiatePlayer() {
-        let endPoints = self.playerItemMetadata.map { (object) -> NSValue in
-            let endTime = object["endSecond"] as? Int ?? 0
-            return NSValue(time: CMTimeMake(Int64(endTime), Int32(1)))
-        }
-        let startPoints = self.playerItemMetadata.map { (object) -> NSValue in
-            let startTime = object["startSecond"] as? Int ?? 0
-            return NSValue(time: CMTimeMake(Int64(startTime), Int32(1)))
-        }
-        print("\(Bundle.main.bundleIdentifier!)_MAPPED_ARRAY: \(endPoints)")
+//        let endPoints = self.playerItemMetadata.map { (object) -> NSValue in
+//            let endTime = object["endSecond"] as? Int ?? 0
+//            return NSValue(time: CMTimeMake(Int64(endTime), Int32(1)))
+//        }
+//        let startPoints = self.playerItemMetadata.map { (object) -> NSValue in
+//            let startTime = object["startSecond"] as? Int ?? 0
+//            return NSValue(time: CMTimeMake(Int64(startTime), Int32(1)))
+//        }
+        //print("\(Bundle.main.bundleIdentifier!)_MAPPED_ARRAY: \(endPoints)")
         asset = AVAsset(url: playerItemURL)
         let assetKeys = ["playable"]
         
@@ -185,19 +183,19 @@ class ViewController: UIViewController {
         self.playerLayer = videoLayer
         
         // handle when the time-frame for displaying a certain metadataLayer is over
-        boundryStartTimeObserverToken = player?.addBoundaryTimeObserver(forTimes: startPoints, queue: nil, using: {
-            [weak self] time in
-            guard (self != nil), (self?.playerItemMetadata.count)! > 0 else {
-                return
-            }
-        })
-        
-        boundryEndTimeObserverToken = player?.addBoundaryTimeObserver(forTimes: endPoints, queue: nil, using: {
-            [weak self] time in
-            guard (self != nil), (self?.playerItemDisplayedMetadata.count)! > 0 else {
-                return
-            }
-        })
+//        boundryStartTimeObserverToken = player?.addBoundaryTimeObserver(forTimes: startPoints, queue: nil, using: {
+//            [weak self] time in
+//            guard (self != nil), (self?.playerItemMetadata.count)! > 0 else {
+//                return
+//            }
+//        })
+//        
+//        boundryEndTimeObserverToken = player?.addBoundaryTimeObserver(forTimes: endPoints, queue: nil, using: {
+//            [weak self] time in
+//            guard (self != nil), (self?.playerItemDisplayedMetadata.count)! > 0 else {
+//                return
+//            }
+//        })
         
         periodicIntervalObserverToken = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(Float64(1), Int32(1)), queue: nil, using: { (time) in
             // do something
@@ -226,10 +224,10 @@ class ViewController: UIViewController {
         }
         
         let videoDisplayRect = videoLayer.videoRect
-        print("VIDEO FRAME: \(videoDisplayRect)")
+        //print("VIDEO FRAME: \(videoDisplayRect)")
         let videoGravity = currentPlayerItem.asset.tracks(withMediaType: AVMediaTypeVideo)[0]
-        print("VIDEO Gravity: \(videoGravity)")
-        print("VIDEO FRAME: \(videoLayer.frame)")
+        //print("VIDEO Gravity: \(videoGravity)")
+        //print("VIDEO FRAME: \(videoLayer.frame)")
         
         let syncLayer = AVSynchronizedLayer(playerItem: playerItem)
         syncLayer.frame = CGRect(x: videoLayer.frame.origin.x, y: videoLayer.frame.origin.y, width: videoLayer.frame.width, height: videoLayer.frame.width)
@@ -298,7 +296,6 @@ class ViewController: UIViewController {
         }
         
         self.view.layer.addSublayer(syncLayer)
-        
     }
     
     // MARK: AVPlayer Controller Methods
@@ -335,7 +332,7 @@ class ViewController: UIViewController {
                 // player is ready to play, load metadata, start playing
                 print("PLAYER READY TO PLAY")
                 self.isVideoReady = true
-                self.addPlayerMetadataLayer()
+                //self.addPlayerMetadataLayer()
             } else if status == .failed {
                 // failed
                 print("PLAYER FAILED TO PLAY")
