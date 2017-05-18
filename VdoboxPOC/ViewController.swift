@@ -41,20 +41,20 @@ class ViewController: UIViewController {
     // MARK: Public API's
     
     // MARK: Private API's
-    fileprivate var player: AVPlayer?
-    fileprivate var asset: AVAsset?
-    fileprivate var playerItem: AVPlayerItem?
-    fileprivate var playerItemContext: AVPlayerItem?
-    fileprivate var playerLayer: AVPlayerLayer?
-    fileprivate var playerMetadataLayer: CALayer?
-    fileprivate var boundryStartTimeObserverToken: Any?
-    fileprivate var boundryEndTimeObserverToken: Any?
-    fileprivate var periodicIntervalTimeObserver: Any?
-    fileprivate var playerItemMetadata: [[String: AnyObject]] = []
-    fileprivate var playerItemDisplayedMetadata: [[String: AnyObject]] = []
-    fileprivate var isVideoPlaying: Bool = false
-    fileprivate var wasVideoPlaying: Bool = false
-    fileprivate var isReadyToPlay: Bool = false {
+    var player: AVPlayer?
+    var asset: AVAsset?
+    var playerItem: AVPlayerItem?
+    var playerItemContext: AVPlayerItem?
+    var playerLayer: AVPlayerLayer?
+    var playerMetadataLayer: CALayer?
+    var boundryStartTimeObserverToken: Any?
+    var boundryEndTimeObserverToken: Any?
+    var periodicIntervalTimeObserver: Any?
+    var playerItemMetadata: [[String: AnyObject]] = []
+    var playerItemDisplayedMetadata: [[String: AnyObject]] = []
+    var isVideoPlaying: Bool = false
+    var wasVideoPlaying: Bool = false
+    var isReadyToPlay: Bool = false {
         willSet {
             if newValue {
                 self.videoSlider.isEnabled = true
@@ -163,7 +163,7 @@ class ViewController: UIViewController {
         }.resume()
     }
     
-    fileprivate func initiatePlayer() {
+    func initiatePlayer() {
         let endPoints = self.playerItemMetadata.map { (object) -> NSValue in
             let endTime = object["endSecond"] as? Int ?? 0
             return NSValue(time: CMTimeMake(Int64(endTime), Int32(1)))
@@ -219,7 +219,7 @@ class ViewController: UIViewController {
         })
     }
     
-    fileprivate func addPlayerMetadataLayer() {
+    func addPlayerMetadataLayer() {
         // check if a Item to play is avaliable, also that its metadat array contsins elements, to overlay
         guard let _ = self.playerItem, self.playerItemMetadata.count > 0, let videoLayer = self.playerLayer, let currentPlayerItem = self.player?.currentItem else {
             return
@@ -268,7 +268,7 @@ class ViewController: UIViewController {
         
     }
     
-    fileprivate func videoDidScrub(to playTime: Float) {
+    func videoDidScrub(to playTime: Float) {
         let currentTime = playTime
         if self.playerItemMetadata.count > 0 {
             // element.startSecond < currentTime
@@ -329,7 +329,7 @@ class ViewController: UIViewController {
         }
     }
     
-    fileprivate func displayData() {
+    func displayData() {
         guard self.playerItemMetadata.count > 0 else {
             return
         }
@@ -363,7 +363,7 @@ class ViewController: UIViewController {
         }
     }
     
-    fileprivate func hideData() {
+    func hideData() {
         let currentTime = Int(CMTimeGetSeconds((self.player?.currentTime())!))
         
         let elementsToHide = self.playerItemDisplayedMetadata.filter({ (element) -> Bool in
