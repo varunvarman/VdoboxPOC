@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B20CA9F1ECDB0F900F8D97A /* VdoboxPOCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B20CA9E1ECDB0F900F8D97A /* VdoboxPOCTests.swift */; };
 		8BC7818D1EAF265A00A4EE3C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC7818C1EAF265A00A4EE3C /* AppDelegate.swift */; };
 		8BC7818F1EAF265A00A4EE3C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC7818E1EAF265A00A4EE3C /* ViewController.swift */; };
 		8BC781921EAF265A00A4EE3C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BC781901EAF265A00A4EE3C /* Main.storyboard */; };
@@ -15,7 +16,20 @@
 		8BC7819A1EAF265A00A4EE3C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BC781981EAF265A00A4EE3C /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		8B20CAA11ECDB0F900F8D97A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BC781811EAF265900A4EE3C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8BC781881EAF265900A4EE3C;
+			remoteInfo = VdoboxPOC;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		8B20CA9C1ECDB0F900F8D97A /* VdoboxPOCTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VdoboxPOCTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B20CA9E1ECDB0F900F8D97A /* VdoboxPOCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VdoboxPOCTests.swift; sourceTree = "<group>"; };
+		8B20CAA01ECDB0F900F8D97A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8BC781891EAF265A00A4EE3C /* VdoboxPOC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VdoboxPOC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BC7818C1EAF265A00A4EE3C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8BC7818E1EAF265A00A4EE3C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -27,6 +41,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		8B20CA991ECDB0F900F8D97A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8BC781861EAF265900A4EE3C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -37,10 +58,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B20CA9D1ECDB0F900F8D97A /* VdoboxPOCTests */ = {
+			isa = PBXGroup;
+			children = (
+				8B20CA9E1ECDB0F900F8D97A /* VdoboxPOCTests.swift */,
+				8B20CAA01ECDB0F900F8D97A /* Info.plist */,
+			);
+			path = VdoboxPOCTests;
+			sourceTree = "<group>";
+		};
 		8BC781801EAF265900A4EE3C = {
 			isa = PBXGroup;
 			children = (
 				8BC7818B1EAF265A00A4EE3C /* VdoboxPOC */,
+				8B20CA9D1ECDB0F900F8D97A /* VdoboxPOCTests */,
 				8BC7818A1EAF265A00A4EE3C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -49,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				8BC781891EAF265A00A4EE3C /* VdoboxPOC.app */,
+				8B20CA9C1ECDB0F900F8D97A /* VdoboxPOCTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -70,6 +102,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		8B20CA9B1ECDB0F900F8D97A /* VdoboxPOCTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8B20CAA51ECDB0F900F8D97A /* Build configuration list for PBXNativeTarget "VdoboxPOCTests" */;
+			buildPhases = (
+				8B20CA981ECDB0F900F8D97A /* Sources */,
+				8B20CA991ECDB0F900F8D97A /* Frameworks */,
+				8B20CA9A1ECDB0F900F8D97A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8B20CAA21ECDB0F900F8D97A /* PBXTargetDependency */,
+			);
+			name = VdoboxPOCTests;
+			productName = VdoboxPOCTests;
+			productReference = 8B20CA9C1ECDB0F900F8D97A /* VdoboxPOCTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		8BC781881EAF265900A4EE3C /* VdoboxPOC */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8BC7819E1EAF265A00A4EE3C /* Build configuration list for PBXNativeTarget "VdoboxPOC" */;
@@ -97,6 +147,12 @@
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Diet Code";
 				TargetAttributes = {
+					8B20CA9B1ECDB0F900F8D97A = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = M698WQAFVS;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 8BC781881EAF265900A4EE3C;
+					};
 					8BC781881EAF265900A4EE3C = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = M698WQAFVS;
@@ -118,11 +174,19 @@
 			projectRoot = "";
 			targets = (
 				8BC781881EAF265900A4EE3C /* VdoboxPOC */,
+				8B20CA9B1ECDB0F900F8D97A /* VdoboxPOCTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		8B20CA9A1ECDB0F900F8D97A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8BC781871EAF265900A4EE3C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -136,6 +200,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		8B20CA981ECDB0F900F8D97A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B20CA9F1ECDB0F900F8D97A /* VdoboxPOCTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8BC781851EAF265900A4EE3C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -147,6 +219,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8B20CAA21ECDB0F900F8D97A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8BC781881EAF265900A4EE3C /* VdoboxPOC */;
+			targetProxy = 8B20CAA11ECDB0F900F8D97A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		8BC781901EAF265A00A4EE3C /* Main.storyboard */ = {
@@ -168,6 +248,34 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		8B20CAA31ECDB0F900F8D97A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = M698WQAFVS;
+				INFOPLIST_FILE = VdoboxPOCTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dietcode.VdoboxPOCTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VdoboxPOC.app/VdoboxPOC";
+			};
+			name = Debug;
+		};
+		8B20CAA41ECDB0F900F8D97A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = M698WQAFVS;
+				INFOPLIST_FILE = VdoboxPOCTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dietcode.VdoboxPOCTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VdoboxPOC.app/VdoboxPOC";
+			};
+			name = Release;
+		};
 		8BC7819C1EAF265A00A4EE3C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -290,6 +398,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8B20CAA51ECDB0F900F8D97A /* Build configuration list for PBXNativeTarget "VdoboxPOCTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8B20CAA31ECDB0F900F8D97A /* Debug */,
+				8B20CAA41ECDB0F900F8D97A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		8BC781841EAF265900A4EE3C /* Build configuration list for PBXProject "VdoboxPOC" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

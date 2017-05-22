@@ -261,6 +261,7 @@ class ViewController: UIViewController {
             dataToDisplay["isDisplayed"] = false as AnyObject
             dataToDisplay["dataLayer"] = dataLayer as AnyObject
             
+            self.playerItemMetadata.remove(at: index)
             self.playerItemMetadata.insert(dataToDisplay, at: index)
         }
         
@@ -269,13 +270,13 @@ class ViewController: UIViewController {
     }
     
     func videoDidScrub(to playTime: Float) {
-        let currentTime = playTime
+        let currentTime = Int(playTime)
         if self.playerItemMetadata.count > 0 {
             // element.startSecond < currentTime
             // element.endSecond > currentTime
             let elementsToDisplay = self.playerItemMetadata.filter({ (element) -> Bool in
                 var valueToReturn = false
-                if let startSecond = element["startSecond"] as? Float, startSecond < currentTime, let endSecond = element["endSecond"] as? Float, endSecond > currentTime, let layerToDisplay = element["dataLayer"] as? CALayer, layerToDisplay.opacity == 0.0 {
+                if let startSecond = element["startSecond"] as? Int, startSecond < currentTime, let endSecond = element["endSecond"] as? Int, endSecond > currentTime, let layerToDisplay = element["dataLayer"] as? CALayer, layerToDisplay.opacity == 0.0 {
                     valueToReturn = true
                 }
                 return valueToReturn
@@ -303,7 +304,7 @@ class ViewController: UIViewController {
         if self.playerItemDisplayedMetadata.count > 0 {
             let elementsToHide = self.playerItemDisplayedMetadata.filter({ (element) -> Bool in
                 var valueToReturn = false
-                if let endSecond = element["endSecond"] as? Float, endSecond <= currentTime, let dataLayer = element["dataLayer"] as? CALayer, dataLayer.opacity == 1.0 {
+                if let endSecond = element["endSecond"] as? Int, endSecond <= currentTime, let dataLayer = element["dataLayer"] as? CALayer, dataLayer.opacity == 1.0 {
                     valueToReturn = true
                 }
                 return valueToReturn
@@ -439,7 +440,7 @@ class ViewController: UIViewController {
                 // player is ready to play, load metadata, start playing
                 print("PLAYER READY TO PLAY")
                 self.isReadyToPlay = true
-                self.addPlayerMetadataLayer()
+                //self.addPlayerMetadataLayer()
             } else if status == .failed {
                 // failed
                 print("PLAYER FAILED TO PLAY")
